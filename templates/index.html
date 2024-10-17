@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>Mistral Chatbot</title>
+</head>
+<body>
+    <div class="container">
+        <h1>Mistral Chatbot</h1>
+        <div class="chat-box" id="chat-box"></div>
+        <input type="text" id="user-input" placeholder="Type your message..." />
+        <button id="send-button">Send</button>
+    </div>
+
+    <script>
+        const sendButton = document.getElementById('send-button');
+        const userInput = document.getElementById('user-input');
+        const chatBox = document.getElementById('chat-box');
+
+        sendButton.addEventListener('click', async () => {
+            const inputText = userInput.value;
+            chatBox.innerHTML += `<div class="user-message">You: ${inputText}</div>`;
+            userInput.value = '';
+
+            const response = await fetch('/ask', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ input: inputText })
+            });
+
+            const data = await response.json();
+            chatBox.innerHTML += `<div class="bot-message">Chatbot: ${data.reply}</div>`;
+            chatBox.scrollTop = chatBox.scrollHeight; // Scroll to the bottom
+        });
+    </script>
+</body>
+</html>
